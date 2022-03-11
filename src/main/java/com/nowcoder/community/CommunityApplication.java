@@ -12,7 +12,6 @@ public class CommunityApplication {
 
 		ConfigurableApplicationContext run = SpringApplication.run(CommunityApplication.class, args);
 
-
 	}
 
 }
