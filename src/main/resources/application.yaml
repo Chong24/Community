@@ -9,6 +9,23 @@ spring:
       query-timeout: 3
   thymeleaf:
     cache: false
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 1339835853@qq.com
+    properties:
+          mail:
+            transport:
+              protocol: smtp
+            smtp:
+              socketFactory:
+                class: javax.net.ssl.SSLSocketFactory
+              port: ${spring.mail.port}
+              auth: true
+              starttls:
+                enable: true
+                required: true
+    password: ykwvwskpzoglgdbh
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -16,7 +33,15 @@ mybatis:
     map-underscore-to-camel-case: true
     use-generated-keys: true
 
+#访问首页路径就变成了http://localhost:8080/community/index
+server:
+  servlet:
+    context-path: /community
+
+community:
+  path:
+    domain: http://localhost:8080
+    upload: d:/javastudy/Project/MyCode/data/upload
 #logging:
 #    level:
 #        com.nowcoder.community: debug
-

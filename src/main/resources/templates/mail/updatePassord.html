@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
+    <title>牛客网-忘记密码</title>
+</head>
+<body>
+<div>
+    <p>
+        <b th:text="${email}">xxx@xxx.com</b>, 您好!
+    </p>
+    <p>
+        您正在更换牛客网账号的密码, 您的验证码为
+    <b th:text="${code}"></b>
+        这是一封验证邮件, 请点击
+        <a th:href="${url}">此链接</a>,
+        确认是否要换密码!
+    </p>
+</div>
+</body>
+</html>

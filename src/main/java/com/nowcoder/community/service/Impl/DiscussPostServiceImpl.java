@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
+ * 对帖子数据查询服务
  * @author wang
  * @create 2022-03-10
  */
 @Service
 public class DiscussPostServiceImpl implements DiscussPostService {
     @Autowired
-    DiscussPostMapper discussPostMapper;
+    private DiscussPostMapper discussPostMapper;
 
 
     @Override

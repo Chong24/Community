@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
+ * 提供对用户的数据库查询服务
  * @author wang
  * @create 2022-03-10
  */
@@ -43,11 +44,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateHeader(int id, String headerUrl) {
-        return updateHeader(id,headerUrl);
+        return userMapper.updateHeader(id,headerUrl);
     }
 
     @Override
     public int updatePassword(int id, String password) {
-        return updatePassword(id,password);
+        return userMapper.updatePassword(id,password);
     }
 }
