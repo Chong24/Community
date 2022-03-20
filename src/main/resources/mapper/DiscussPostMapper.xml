@@ -8,6 +8,10 @@
         id, user_id, title, content, type, status, create_time, comment_count, score
     </sql>
 
+    <sql id="insertFileds">
+        user_id, title, content, type, status, create_time, comment_count, score
+    </sql>
+
     <!--List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit);-->
     <!--返回list的时候，resyltType填的是list中元素的类型-->
     <select id="selectDiscussPosts" resultType="com.nowcoder.community.entity.DiscussPost">
@@ -31,4 +35,16 @@
         </if>
     </select>
 
+    <!--    int insertDiscussPost(DiscussPost discussPost);-->
+    <insert id="insertDiscussPost" parameterType="com.nowcoder.community.entity.DiscussPost">
+        insert into discuss_post(<include refid="insertFileds"></include>)
+        values(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})
+    </insert>
+
+    <!-- DiscussPost selectDiscussPostById(int id);   -->
+    <select id="selectDiscussPostById" resultType="com.nowcoder.community.entity.DiscussPost">
+        select <include refid="seleceFileds"></include>
+        from discuss_post
+        where id = #{id}
+    </select>
 </mapper>
