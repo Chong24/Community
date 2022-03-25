@@ -47,4 +47,10 @@
         from discuss_post
         where id = #{id}
     </select>
+
+    <!--int updateCommentCount(int id, int commentCount);-->
+    <insert id="updateCommentCount">
+        UPDATE discuss_post set comment_count = #{commentCount} where id = #{id}
+    </insert>
+
 </mapper>

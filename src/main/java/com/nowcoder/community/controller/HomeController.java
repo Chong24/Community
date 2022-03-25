@@ -4,8 +4,11 @@ import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.Impl.DiscussPostServiceImpl;
+import com.nowcoder.community.service.Impl.LikeServiceImpl;
 import com.nowcoder.community.service.Impl.UserServiceImpl;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
+import com.nowcoder.community.util.CommunityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +28,7 @@ import java.util.Map;
  * @create 2022-03-10
  */
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
 
     //自动加载的一定得是容器中有的组件，一般加载的都是实现类
     @Autowired
@@ -33,6 +36,9 @@ public class HomeController {
 
     @Autowired
     DiscussPostServiceImpl discussPostService;
+
+    @Autowired
+    LikeServiceImpl likeService;
 
     /**
      *  需要注意的是，控制器中的形参实体类，都是从IOC容器中取的；并且都会将其他形参类自动存在model中
@@ -63,6 +69,9 @@ public class HomeController {
                 map.put("post",post);
                 User user = userService.selectById(post.getUserId());
                 map.put("user",user);
+                //查点赞数量
+                Long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount", likeCount);
                 discussPosts.add(map);
             }
         }
