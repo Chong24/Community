@@ -1,14 +1,9 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
-import com.nowcoder.community.entity.Comment;
-import com.nowcoder.community.entity.DiscussPost;
-import com.nowcoder.community.entity.Page;
-import com.nowcoder.community.entity.User;
-import com.nowcoder.community.service.Impl.CommentServiceImpl;
-import com.nowcoder.community.service.Impl.DiscussPostServiceImpl;
-import com.nowcoder.community.service.Impl.LikeServiceImpl;
-import com.nowcoder.community.service.Impl.UserServiceImpl;
+import com.nowcoder.community.entity.*;
+import com.nowcoder.community.event.EventProducer;
+import com.nowcoder.community.service.Impl.*;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
@@ -17,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.smartcardio.CommandAPDU;
 import java.util.*;
 
 /**
@@ -43,6 +37,12 @@ public class DiscussPostController implements CommunityConstant{
     @Autowired
     private LikeServiceImpl likeService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
+    @Autowired
+    private ElasticsearchServiceImpl elasticsearchService;
+
     /**
      * 将用户发布的贴子存到数据库中，返回JSON类型的交互信息
      * @param title
@@ -64,6 +64,14 @@ public class DiscussPostController implements CommunityConstant{
         post.setContent(content);
         post.setCreateTime(new Date());
         discussPostService.insertDiscussPost(post);
+
+        // 触发发帖事件，以便消费者收到消息后可以存在Elasticsearch的数据库中
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
 
         //可能会出现报错的情况，以后统一处理
         return CommunityUtil.getJSONString(0,"发布成功");
@@ -156,5 +164,19 @@ public class DiscussPostController implements CommunityConstant{
 
         model.addAttribute("comments",commentVoList);
         return "/site/discuss-detail";
+    }
+
+    @LoginRequired
+    @ResponseBody
+    @GetMapping("/delete/{discussPostId}")
+    public String addDiscussPost(@PathVariable("discussPostId") int discussPostId) {
+        User user = hostHolder.getUser();
+        if (user == null) {
+            return CommunityUtil.getJSONString(403, "你还没有登陆");
+        }
+        discussPostService.deleteDiscussPostById(discussPostId);
+        elasticsearchService.deleteDiscussPost(discussPostId);
+
+        return CommunityUtil.getJSONString(0,"删除成功");
     }
 }

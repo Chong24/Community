@@ -20,4 +20,6 @@ public interface DiscussPostService {
     public DiscussPost selectDiscussPostById(int id);
 
     int updateCommentCount(int id, int commentCount);
+
+    int deleteDiscussPostById(int id);
 }
