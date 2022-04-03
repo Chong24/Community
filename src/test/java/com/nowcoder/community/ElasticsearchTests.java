@@ -75,20 +75,6 @@ public class ElasticsearchTests {
     }
 
     @Test
-    public void testSearchByRepository() {
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
-                .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
-                .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
-                .withPageable(PageRequest.of(0, 10))
-                .withHighlightFields(
-                        new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
-                        new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
-                ).build();
-    }
-
-    @Test
     public void testSearchByTemplate() {
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
@@ -117,5 +103,10 @@ public class ElasticsearchTests {
 
             discussPosts.add(searchHit.getContent());
         }
+        for (DiscussPost discussPost : discussPosts) {
+            System.out.println(discussPost.toString());
+
+        }
+
     }
 }

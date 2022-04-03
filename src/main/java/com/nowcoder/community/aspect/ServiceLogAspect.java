@@ -38,6 +38,11 @@ public class ServiceLogAspect {
 
         //首先我们要获得用户的ip，则需要拿到request
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        //以前都是通过控制器访问服务层，控制器就会有请求，有请求就有ip，是不会为空的，
+        // 但是引用了kafka后，是异步的，可能获取的是消息队列中的数据，然后访问服务层，不通过控制器这条路，所以可能会为空
+        if (attributes == null) {
+            return;
+        }
         HttpServletRequest request = attributes.getRequest();
         String ip = request.getRemoteHost();
 

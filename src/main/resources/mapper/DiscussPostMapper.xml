@@ -36,7 +36,7 @@
     </select>
 
     <!--    int insertDiscussPost(DiscussPost discussPost);-->
-    <insert id="insertDiscussPost" parameterType="com.nowcoder.community.entity.DiscussPost">
+    <insert id="insertDiscussPost" parameterType="com.nowcoder.community.entity.DiscussPost" keyProperty="id">
         insert into discuss_post(<include refid="insertFileds"></include>)
         values(#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})
     </insert>
@@ -53,4 +53,8 @@
         UPDATE discuss_post set comment_count = #{commentCount} where id = #{id}
     </insert>
 
+    <!--int deleteDiscussPostById(int id);-->
+    <delete id="deleteDiscussPostById">
+        delete from discuss_post where id = #{id};
+    </delete>
 </mapper>
