@@ -9,6 +9,11 @@ import com.nowcoder.community.util.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,6 +66,11 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 User user = userService.selectById(loginTicket.getUserId());
                 //存在有线程保护的threadlocal中
                 hostHolder.setUser(user);
+                //由于我们用的是自己实现的自定义规则，所以我们要在用户登陆之后，构建用户认证的结果
+                //存入SecurityContext,以便于Security进行授权
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        user,user.getPassword(),userService.getAuthorities(user.getId()));
+                SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
             }
         }
         return true;

@@ -179,4 +179,80 @@ public class DiscussPostController implements CommunityConstant{
 
         return CommunityUtil.getJSONString(0,"删除成功");
     }
+
+    //处理置顶请求：异步请求的方式
+    @PostMapping("/top")
+    @ResponseBody
+    public String setTop(int id){
+        //type = 1代表置顶
+        discussPostService.updateType(id,1);
+
+        //触发发帖事件，因为要更新ElasticSearch库中帖子
+        Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST).setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    @PostMapping("/unTop")
+    @ResponseBody
+    public String setUnTop(int id){
+        //type = 1代表置顶
+        discussPostService.updateType(id,0);
+
+        //触发发帖事件，因为要更新ElasticSearch库中帖子
+        Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST).setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    //加精
+    //处理置顶请求：异步请求的方式
+    @PostMapping("/wonderful")
+    @ResponseBody
+    public String setUnWonderful(int id){
+        //status = 1代表加精，2代表删除
+        discussPostService.updateStatus(id,1);
+
+        //触发发帖事件，因为要更新ElasticSearch库中帖子
+        Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST).setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    @PostMapping("/unWonderful")
+    @ResponseBody
+    public String setWonderful(int id){
+        //status = 1代表加精，2代表删除
+        discussPostService.updateStatus(id,0);
+
+        //触发发帖事件，因为要更新ElasticSearch库中帖子
+        Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST).setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
+    // 删除
+    @RequestMapping(path = "/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id) {
+        discussPostService.updateStatus(id, 2);
+
+        // 触发删帖事件
+        Event event = new Event()
+                .setTopic(TOPIC_DELETE)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return CommunityUtil.getJSONString(0);
+    }
 }

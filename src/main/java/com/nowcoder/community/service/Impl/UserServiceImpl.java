@@ -3,11 +3,16 @@ package com.nowcoder.community.service.Impl;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @create 2022-03-10
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, CommunityConstant {
 
     @Autowired
     private UserMapper userMapper;
@@ -93,5 +98,25 @@ public class UserServiceImpl implements UserService {
     private void clearCache(int userId){
         String redisKey = RedisKeyUtil.getUserKey(userId);
         redisTemplate.delete(redisKey);
+    }
+
+    //获取授权的方法，如果继承UserDetailsService，JavaBean类User就要继承UserDetails，然后在User类中写获取授权的方法。
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId){
+        User user = this.selectById(userId);
+        List<GrantedAuthority> list = new ArrayList<>();
+        list.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                switch (user.getType()){
+                    case 1:
+                        return AUTHORITY_ADMIN;
+                    case 2:
+                        return AUTHORITY_MODERATOR;
+                    default:
+                        return AUTHORITY_USER;
+                }
+            }
+        });
+        return list;
     }
 }
