@@ -22,7 +22,7 @@ public interface DiscussPostMapper {
      * @param limit     查多少条
      * @return  返回查询到的数据
      */
-    List<DiscussPost> selectDiscussPosts(@Param("userId") int userId, @Param("offset") int offset, @Param("limit") int limit);
+    List<DiscussPost> selectDiscussPosts(@Param("userId") int userId, @Param("offset") int offset, @Param("limit") int limit, @Param("orderMode") int orderMode);
 
     /**
      * 查询总共有多少个帖子
@@ -59,4 +59,6 @@ public interface DiscussPostMapper {
     int updateType(@Param("id") int id, @Param("type") int type);
 
     int updateStatus(@Param("id") int id, @Param("status") int status);
+
+    int updateScore(@Param("id") int id, @Param("score") double score);
 }

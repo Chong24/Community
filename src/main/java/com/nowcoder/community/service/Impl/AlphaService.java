@@ -3,7 +3,6 @@ package com.nowcoder.community.service.Impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +15,7 @@ public class AlphaService {
         logger.debug("execute1");
     }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 1000)
+    //@Scheduled(initialDelay = 10000, fixedRate = 1000)
     public void execute2() {
         logger.debug("execute2");
     }

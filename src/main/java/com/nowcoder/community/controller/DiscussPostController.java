@@ -7,7 +7,9 @@ import com.nowcoder.community.service.Impl.*;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
+import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +45,9 @@ public class DiscussPostController implements CommunityConstant{
     @Autowired
     private ElasticsearchServiceImpl elasticsearchService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 将用户发布的贴子存到数据库中，返回JSON类型的交互信息
      * @param title
@@ -72,6 +77,10 @@ public class DiscussPostController implements CommunityConstant{
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(post.getId());
         eventProducer.fireEvent(event);
+
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,post.getId());
 
         //可能会出现报错的情况，以后统一处理
         return CommunityUtil.getJSONString(0,"发布成功");
@@ -222,6 +231,10 @@ public class DiscussPostController implements CommunityConstant{
                 .setEntityType(ENTITY_TYPE_POST).setEntityId(id);
         eventProducer.fireEvent(event);
 
+        //计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,id);
+
         return CommunityUtil.getJSONString(0);
     }
 
@@ -235,6 +248,10 @@ public class DiscussPostController implements CommunityConstant{
         Event event = new Event().setTopic(TOPIC_PUBLISH).setUserId(hostHolder.getUser().getId())
                 .setEntityType(ENTITY_TYPE_POST).setEntityId(id);
         eventProducer.fireEvent(event);
+
+        //取消计算帖子分数
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().remove(redisKey,id);
 
         return CommunityUtil.getJSONString(0);
     }

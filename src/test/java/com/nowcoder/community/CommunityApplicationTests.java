@@ -3,21 +3,15 @@ package com.nowcoder.community;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Deque;
-import java.util.LinkedList;
-
 @SpringBootTest
 class CommunityApplicationTests {
 
 	@Test
 	void contextLoads() {
-		Deque<Integer> deque = new LinkedList<>();
-		Deque<Integer> deque1 = new LinkedList<>();
+		double x = 1;
+		double y = x + 3/2;
 
-		deque.add(1);
-		deque1.add(1);
-
-		System.out.println(deque.peek() == deque1.peekFirst());
+		System.out.println(y);
 	}
 
 }
