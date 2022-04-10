@@ -76,6 +76,37 @@ community:
   path:
     domain: http://localhost:8080
     upload: d:/javastudy/Project/MyCode/data/upload
+
+wk:
+  image:
+    command: d:/wkhtml/wkhtmltopdf/bin/wkhtmltoimage
+    storage: d:/wkhtml/work/data/wk-images
+
+qiniu:
+  key:
+    access: Lu3ltEwHNh4Jkr2xA0O38U--iah4-5Ujj7SfpfC1
+    secret: 4xk1ERiRbOGLDAYr9xrHiMRt1wwD45mUPbFC2lXO
+  bucket:
+    header:
+      name: community-header24
+      url:
+    share:
+      name: community-share24
+      url:
+
+caffeine:
+  posts:
+    max-size: 15
+    expire-seconds: 180
+
+#actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: *
+        exclude: info, caches
+
 #logging:
 #    level:
 #        com.nowcoder.community: debug

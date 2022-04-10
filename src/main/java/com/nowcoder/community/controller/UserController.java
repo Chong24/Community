@@ -9,6 +9,8 @@ import com.nowcoder.community.service.Impl.*;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,13 +66,53 @@ public class UserController implements CommunityConstant{
     @Autowired
     private CommentServiceImpl commentService;
 
+    @Value("${qiniu.key.access}")
+    private String accessKey;
+
+    @Value("${qiniu.key.secret}")
+    private String secretKey;
+
+    @Value("${qiniu.bucket.header.name}")
+    private String headerBucketName;
+
+    @Value("${qiniu.bucket.header.url}")
+    private String headerBucketUrl;
+
+
     @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
-    public String getSettingPage() {
+    public String getSettingPage(Model model) {
+        // 上传文件名称
+        String fileName = CommunityUtil.generateUUID();
+        // 设置响应信息
+        StringMap policy = new StringMap();
+        policy.put("returnBody", CommunityUtil.getJSONString(0));
+        // 生成上传凭证
+        Auth auth = Auth.create(accessKey, secretKey);
+        String uploadToken = auth.uploadToken(headerBucketName, fileName, 3600, policy);
+
+        model.addAttribute("uploadToken", uploadToken);
+        model.addAttribute("fileName", fileName);
+
         return "/site/setting";
     }
 
+    // 更新头像路径
+    @RequestMapping(path = "/header/url", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateHeaderUrl(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return CommunityUtil.getJSONString(1, "文件名不能为空!");
+        }
+
+        String url = headerBucketUrl + "/" + fileName;
+        userService.updateHeader(hostHolder.getUser().getId(), url);
+
+        return CommunityUtil.getJSONString(0);
+    }
+
     /**
+     * 上传到本地的方法，我们现在废弃，改成上传到云服务器
      * 上传头像：上传就是将本地的文件传到服务器文件下
      * @param headerImage：MultipartFile是处理单个文件的，多个文件需要用MultipartFile[]
      * @param model
@@ -113,7 +155,7 @@ public class UserController implements CommunityConstant{
     }
 
     /**
-     * 显示头像
+     * 显示头像，废弃，该从云服务器读取显示头像
      * @param fileName 文件名
      * @param response  由于输出的是特殊格式，是图片，需要自己输出
      */
