@@ -1,0 +1,115 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/community
+    username: root
+    password: wangchao
+    driver-class-name: com.mysql.jdbc.Driver
+  jdbc:
+    template:
+      query-timeout: 3
+  thymeleaf:
+    cache: false
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 1339835853@qq.com
+    properties:
+          mail:
+            transport:
+              protocol: smtp
+            smtp:
+              socketFactory:
+                class: javax.net.ssl.SSLSocketFactory
+              port: ${spring.mail.port}
+              auth: true
+              starttls:
+                enable: true
+                required: true
+    password: ykwvwskpzoglgdbh
+  redis:
+    database: 11
+    host: localhost
+    port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: test-consumer-group
+      enable-auto-commit: true
+      auto-commit-interval: 3000
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+    scheduling:
+      pool:
+        size: 5
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communityScheduler
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    use-generated-keys: true
+
+#访问首页路径就变成了http://localhost:8080/community/index
+server:
+  servlet:
+    context-path:
+
+community:
+  path:
+    domain: http://localhost:8080
+    upload: d:/javastudy/Project/MyCode/data/upload
+
+wk:
+  image:
+    command: d:/wkhtml/wkhtmltopdf/bin/wkhtmltoimage
+    storage: d:/wkhtml/work/data/wk-images
+
+qiniu:
+  key:
+    access: Lu3ltEwHNh4Jkr2xA0O38U--iah4-5Ujj7SfpfC1
+    secret: 4xk1ERiRbOGLDAYr9xrHiMRt1wwD45mUPbFC2lXO
+  bucket:
+    header:
+      name: community-header24
+      url: http://ra82ly00z.hn-bkt.clouddn.com
+    share:
+      name: community-share24
+      url: http://ra82h4m67.hn-bkt.clouddn.com
+
+caffeine:
+  posts:
+    max-size: 15
+    expire-seconds: 180
+
+#actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: info, caches
+
+# * 在yaml文件中是关键字，需要打双引号
+
+#logging:
+#    level:
+#        com.nowcoder.community: debug
+# KafkaProperties

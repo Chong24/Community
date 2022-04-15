@@ -5,7 +5,7 @@ $(function(){
 function upload() {
     $.ajax({
         //在七牛云中根据地区可以查询到
-        url: "http://upload-z1.qiniup.com",
+        url: "http://upload-z2.qiniup.com",
         //提交数据，所以是post请求
         method: "post",
         //表示不要将表单转为字符串

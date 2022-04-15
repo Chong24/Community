@@ -38,6 +38,11 @@ public class HomeController implements CommunityConstant {
     @Autowired
     LikeServiceImpl likeService;
 
+    @GetMapping("/")
+    public String root(){
+        return "forward:/index";
+    }
+
     /**
      *  需要注意的是，控制器中的形参实体类，都是从IOC容器中取的；并且都会将其他形参类自动存在model中
      *  方法调用前,SpringMVC会自动实例化Model和Page,并将Page注入Model.

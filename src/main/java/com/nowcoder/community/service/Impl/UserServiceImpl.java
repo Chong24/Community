@@ -57,7 +57,9 @@ public class UserServiceImpl implements UserService, CommunityConstant {
 
     @Override
     public int updateStatus(int id, int status) {
-        return userMapper.updateStatus(id,status);
+        int rows = userMapper.updateStatus(id, status);
+        clearCache(id);
+        return rows;
     }
 
     @Override

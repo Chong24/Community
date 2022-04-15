@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>community</name>
     <description>Project for nowcoder</description>
+    <packaging>war</packaging>
     <properties>
         <java.version>1.8</java.version>
         <mysql.version>5.1.49</mysql.version>
@@ -152,6 +153,7 @@
     </dependencies>
 
     <build>
+        <finalName>ROOT</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

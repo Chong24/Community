@@ -2,16 +2,10 @@ package com.nowcoder.community;
 
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.service.Impl.DiscussPostServiceImpl;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.event.annotation.AfterTestClass;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
-
 
 import java.util.Date;
 
@@ -24,17 +18,17 @@ public class SpringBootTests {
 
     private DiscussPost data;
 
-    @BeforeTestClass
+    @BeforeAll
     public static void beforeClass() {
         System.out.println("beforeClass");
     }
 
-    @AfterTestClass
+    @AfterAll
     public static void afterClass() {
         System.out.println("afterClass");
     }
 
-    @BeforeAll
+    @BeforeEach
     public void before() {
         System.out.println("before");
 
@@ -47,7 +41,7 @@ public class SpringBootTests {
         discussPostService.insertDiscussPost(data);
     }
 
-    @AfterAll
+    @AfterEach
     public void after() {
         System.out.println("after");
 

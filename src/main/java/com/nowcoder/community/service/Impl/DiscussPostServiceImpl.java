@@ -5,7 +5,9 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.nowcoder.community.dao.DiscussPostMapper;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.DiscussPostService;
+import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.SensitiveFilter;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
@@ -34,6 +37,9 @@ public class DiscussPostServiceImpl implements DiscussPostService {
 
     @Autowired
     private SensitiveFilter sensitiveFilter;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${caffeine.posts.max-size}")
     private int maxSize;
@@ -68,6 +74,14 @@ public class DiscussPostServiceImpl implements DiscussPostService {
 
                         //这里可以做二级缓存
                         //参照userService中的缓存三步：1、优先从缓存中取值；2、取不到时初始化缓存数据；3、数据变更时清除缓存数据
+//                        List<DiscussPost> redisCache = getCache(offset, limit);
+//                        if (redisCache != null){
+//                            logger.debug("load post list from Redis");
+//                            return redisCache;
+//                        }
+//
+//                        logger.debug("load post list from DB");
+//                        return initCache(0, offset, limit, 1);
 
                         //访问数据库
                         logger.debug("load post list from DB");
@@ -133,6 +147,9 @@ public class DiscussPostServiceImpl implements DiscussPostService {
 
 
     public int updateCommentCount(int entityId, int count) {
+        //更新就清除缓存
+        postRowsCache.invalidateAll();
+        postListCache.invalidateAll();
         return discussPostMapper.updateCommentCount(entityId,count);
     }
 
@@ -143,16 +160,43 @@ public class DiscussPostServiceImpl implements DiscussPostService {
 
     @Override
     public int updateType(int id, int type) {
+        postRowsCache.invalidateAll();
+        postListCache.invalidateAll();
         return discussPostMapper.updateType(id,type);
     }
 
     @Override
     public int updateStatus(int id, int status) {
+        postRowsCache.invalidateAll();
+        postListCache.invalidateAll();
         return discussPostMapper.updateStatus(id,status);
     }
 
     @Override
     public int updateScore(int id, double score) {
+        postRowsCache.invalidateAll();
+        postListCache.invalidateAll();
         return discussPostMapper.updateScore(id,score);
     }
+
+//    //缓存的三步
+//    //1、优先从缓存中取值
+//    private List<DiscussPost> getCache(int offset, int limit){
+//        String redisKey = offset + ":" + limit;
+//        return (List<DiscussPost>) redisTemplate.opsForValue().get(redisKey);
+//    }
+//
+//    //2、取不到时则查mysql，然后初始化缓存数据
+//    private List<DiscussPost> initCache(int userId, int offset, int limit, int orderMode){
+//        List<DiscussPost> posts = discussPostMapper.selectDiscussPosts(userId,offset,limit,orderMode);
+//        String redisKey = offset + ":" + limit;
+//        redisTemplate.opsForValue().set(redisKey,posts,3600, TimeUnit.SECONDS);
+//        return posts;
+//    }
+//
+//    //3、数据变更时清除缓存数据
+//    private void clearCache(int offset, int limit){
+//        String redisKey = offset + ":" + limit;
+//        redisTemplate.delete(redisKey);
+//    }
 }
